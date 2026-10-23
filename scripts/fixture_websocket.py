@@ -94,17 +94,18 @@ class FixtureWebSocket:
 
 
 class LoopbackWebSocketClient(FixtureWebSocket):
-    def __init__(self, url, key):
+    def __init__(self, url, key, *, headers=None):
         target = urlsplit(url)
         if target.scheme != "ws" or target.hostname != "127.0.0.1" or not target.port:
             raise ValueError("only loopback fixture WebSockets are allowed")
         self.socket = socket.create_connection((target.hostname, target.port), timeout=15)
         self.file = self.socket.makefile("rwb", buffering=0)
         nonce = base64.b64encode(os.urandom(16)).decode()
+        extra_headers = "".join(f"{name}: {value}\r\n" for name, value in (headers or {}).items())
         request = (
             f"GET {target.path} HTTP/1.1\r\nHost: 127.0.0.1:{target.port}\r\n"
             "Connection: Upgrade\r\nUpgrade: websocket\r\nSec-WebSocket-Version: 13\r\n"
-            f"Sec-WebSocket-Key: {nonce}\r\nAuthorization: Bearer {key}\r\n\r\n"
+            f"Sec-WebSocket-Key: {nonce}\r\nAuthorization: Bearer {key}\r\n{extra_headers}\r\n"
         )
         try:
             self.file.write(request.encode())

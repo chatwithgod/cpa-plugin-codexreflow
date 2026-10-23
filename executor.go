@@ -156,6 +156,12 @@ func routeModel(raw []byte) ([]byte, error) {
 		return okEnvelope(pluginapi.ModelRouteResponse{Handled: false})
 	}
 
+	// WebSocket warmups prepare native request state without producing an
+	// answer. Leave them on CPA's route instead of starting a reasoning fold.
+	if body["generate"] == false {
+		return okEnvelope(pluginapi.ModelRouteResponse{Handled: false})
+	}
+
 	if _, hasPRI := body["previous_response_id"]; hasPRI {
 		return okEnvelope(pluginapi.ModelRouteResponse{Handled: false})
 	}
@@ -249,11 +255,8 @@ func executeStream(raw []byte) ([]byte, error) {
 	}
 
 	origInput, _ := baseBody["input"].([]any)
-	if origInput == nil {
-		origInput = []any{}
-	} else {
-		origInput = append([]any(nil), origInput...)
-	}
+	// Keep an empty array non-nil: a nil slice would encode as input:null.
+	origInput = append([]any{}, origInput...)
 
 	fs := newFoldState(baseBody, origInput, req, req.HostCallbackID)
 	logReflowEvent(fs.diagnosticEvent("fold_started"))

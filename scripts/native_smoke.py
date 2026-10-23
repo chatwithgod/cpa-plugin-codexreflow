@@ -163,10 +163,11 @@ class OfflineHost:
             return {}
         raise RuntimeError(f"unexpected callback: {method}")
 
-    def run_case(self, transport, rounds, fragmented=False, cancelled=False, *, model="fixture-model", config=None):
+    def run_case(self, transport, rounds, fragmented=False, cancelled=False, *, model="fixture-model", config=None, input_items=None):
         config = b"models: [fixture-model]\nmax_continue: 3\n" if config is None else config
         self.call("plugin.reconfigure", {"config_yaml": encoded(config)})
-        body = wire({"model": model, "stream": True, "input": [{"role": "user", "content": "offline fixture"}]})
+        items = [{"role": "user", "content": "offline fixture"}] if input_items is None else input_items
+        body = wire({"model": model, "stream": True, "input": items})
         route = self.call("model.route", {
             "RequestedModel": model, "SourceFormat": "openai-response", "Stream": True, "Body": encoded(body),
         })
@@ -209,6 +210,22 @@ def main():
     assert registration["capabilities"]["executor_output_formats"] == ["codex", "openai-response"]
     assert registration["capabilities"]["request_interceptor"] is True
     results = []
+    # Prewarms must stay on CPA's native route; folding them changes request state.
+    host.call("plugin.reconfigure", {"config_yaml": encoded(b"")})
+    for items in ([], [{"role": "user", "content": "offline warmup fixture"}]):
+        body = wire({"model": "gpt-6-sol", "stream": True, "generate": False, "input": items})
+        route = host.call("model.route", {
+            "RequestedModel": "gpt-6-sol", "SourceFormat": "openai-response", "Stream": True, "Body": encoded(body),
+        })
+        assert not route.get("Handled", route.get("handled", False)), "prewarm was selected for reasoning continuation"
+        scenario = "prewarm-native-route-with-input" if items else "prewarm-native-route-empty-input"
+        results.append({"scenario": scenario, "input_count": len(items), "passed": True})
+    # Exercise the actual compiled executor, not just the JSON helper: copying
+    # an empty slice previously changed the upstream wire input from [] to null.
+    _, terminal = host.run_case("json", [round_events(1)], input_items=[])
+    assert host.bodies[0]["input"] == [], "empty executor input changed to null"
+    assert terminal["type"] == "response.completed"
+    results.append({"scenario": "empty-input-preserved-on-wire", "passed": True})
     for transport in ("sse", "json", "cpa-lines"):
         scenarios = ("normal", "continuation", "tool", "cancelled", "eof", "failed", "upstream-incomplete")
         if transport != "cpa-lines":

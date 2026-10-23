@@ -1,5 +1,12 @@
 # Changelog
 
+## 0.1.2
+
+- Fix HTTP 400 during Codex WebSocket warmup: requests with `generate: false` remain on CPA's native route, preserving empty `input: []` and the response ID used by the next turn.
+- Preserve non-nil empty input arrays when copying ordinary streaming requests, so the executor does not serialize them as `input: null`.
+- Add routing and actual-library regression coverage for empty/non-empty warmups and empty-array forwarding, plus an isolated CPA 8.0.38 WebSocket test that continues on the same connection.
+- Require all 34 native ABI scenarios when packaging both original and ZIP-extracted libraries. Derive per-platform and bundle counts from the complete required suite and use the repository's current `chatwithgod` URL in release metadata. CPA SDK remains pinned to `v8.0.13`.
+
 ## 2026-10-11 Windows isolated validation (documented 2026-10-12; no new binary release)
 
 - Validate the exact published v0.1.1 Windows ZIP/DLL bytes without rebuilding. The DLL passes 31 native ABI cases and 50 synthetic isolated HTTP/WS scenario executions on each pinned CPA 8.0.13/8.0.15/8.0.16 host, totaling 150 executions rather than 150 distinct scenarios. Read back report and host hashes; see [the independent validation record](docs/VALIDATION-2026-10-12-0.1.1.md).

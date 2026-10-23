@@ -11,11 +11,11 @@ import subprocess
 import sys
 import tempfile
 
-from package_release import (archive_name, host_platform, library_name, license_bytes,
+from package_release import (NATIVE_CASES, archive_name, host_platform, library_name, license_bytes,
                              source_fingerprint, validate_archive, validate_native_report)
 
 ROOT = Path(__file__).resolve().parents[1]
-REPOSITORY = "https://github.com/LaoPiLao/cpa-plugin-codexreflow"
+REPOSITORY = "https://github.com/chatwithgod/cpa-plugin-codexreflow"
 
 
 def run(*args, cwd=ROOT):
@@ -116,7 +116,7 @@ def main():
                 "archive": archive, "archive_sha256": hashlib.sha256((output / archive).read_bytes()).hexdigest(),
                 "library_sha256": hashlib.sha256(raw).hexdigest(), "reports": reports,
                 "go_unit_race_vet_fuzz_passed": True, "python_tests_passed": True,
-                "native_case_executions": 31, "packaged_native_case_executions": 31,
+                "native_case_executions": NATIVE_CASES, "packaged_native_case_executions": NATIVE_CASES,
                 "validation_scope": "offline native ABI; not full CPA integration or live models",
                 "production_changes": False, "billable_model_calls": 0, "published": False}
     with (output / "validation.json").open("x", encoding="utf-8", newline="\n") as stream:

@@ -89,7 +89,7 @@ jobs:
         run: >-
           python scripts/assemble_release.py
           --input-dir .tools/platform-artifacts --output-dir dist/full-platform-candidate
-          --repository https://github.com/LaoPiLao/cpa-plugin-codexreflow
+          --repository https://github.com/chatwithgod/cpa-plugin-codexreflow
       - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
         with:
           name: codexreflow-five-platform-candidate

@@ -78,7 +78,7 @@ def write_platform(parent, goos, goarch):
                 "archive_sha256": hashlib.sha256(archive.read_bytes()).hexdigest(),
                 "library_sha256": hashlib.sha256(raw).hexdigest(), "reports": reports,
                 "go_unit_race_vet_fuzz_passed": True, "python_tests_passed": True,
-                "native_case_executions": 31, "packaged_native_case_executions": 31,
+                "native_case_executions": NATIVE_CASES, "packaged_native_case_executions": NATIVE_CASES,
                 "validation_scope": "offline native ABI; not full CPA integration or live models",
                 "production_changes": False, "billable_model_calls": 0, "published": False}
     (directory / "validation.json").write_text(json.dumps(evidence), encoding="utf-8")
@@ -272,7 +272,7 @@ class AggregateTests(unittest.TestCase):
         summary = self.collect()
         self.assertEqual(len(summary["platforms"]), 5)
         self.assertFalse(summary["published"])
-        self.assertEqual(summary["native_case_executions"], 155)
+        self.assertEqual(summary["native_case_executions"], NATIVE_CASES * len(PLATFORMS))
         expected = {archive_name(VERSION, *target) for target in PLATFORMS}
         self.assertEqual({path.name for path in self.output.glob("*.zip")}, expected)
         lines = (self.output / "checksums.txt").read_text().splitlines()

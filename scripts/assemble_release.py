@@ -12,7 +12,7 @@ from pathlib import Path
 import re
 import subprocess
 
-from package_release import (PLATFORMS, archive_name, library_name, license_bytes,
+from package_release import (NATIVE_CASES, PLATFORMS, archive_name, library_name, license_bytes,
                              source_fingerprint, validate_archive, validate_metadata,
                              validate_native_report)
 
@@ -40,7 +40,7 @@ def validate_platform(directory, version, repository, commit, fingerprint, goos,
                 "goos": goos, "goarch": goarch, "source_commit": commit, "root_go_source_sha256": fingerprint,
                 "sdk_version": "8.0.13", "go_version": "go1.26.8", "archive": name, "archive_sha256": digest,
                 "library_sha256": hashlib.sha256(library).hexdigest(), "go_unit_race_vet_fuzz_passed": True,
-                "python_tests_passed": True, "native_case_executions": 31, "packaged_native_case_executions": 31,
+                "python_tests_passed": True, "native_case_executions": NATIVE_CASES, "packaged_native_case_executions": NATIVE_CASES,
                 "validation_scope": "offline native ABI; not full CPA integration or live models",
                 "production_changes": False, "billable_model_calls": 0, "published": False}
     if any(type(evidence.get(key)) is not type(value) or evidence.get(key) != value for key, value in expected.items()):
@@ -85,7 +85,8 @@ def assemble(input_dir, output_dir, version, repository, commit, fingerprint, li
         stream.writelines(lines)
     summary = {"schema_version": 1, "version": version, "repository": repository, "source_commit": commit,
                "root_go_source_sha256": fingerprint, "platforms": evidence,
-               "native_case_executions": 155, "packaged_native_case_executions": 155,
+               "native_case_executions": sum(record["native_case_executions"] for record in evidence),
+               "packaged_native_case_executions": sum(record["packaged_native_case_executions"] for record in evidence),
                "validation_scope": "offline native ABI; not full CPA integration or live models",
                "production_changes": False, "billable_model_calls": 0, "published": False}
     with (output_dir / "validation-summary.json").open("x", encoding="utf-8", newline="\n") as stream:

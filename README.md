@@ -8,7 +8,7 @@ GPT 经常只想了 `516` 个 token 就草草交卷？CodexReflow 是一个 [CLI
 
 **项目来源：** 本项目基于 [uf-hy / CPA CodexComp v0.1.7](https://github.com/uf-hy/cpa-plugin-codexcomp/tree/v0.1.7) 独立维护，沿用源自 [dzshzx / codexcomp](https://github.com/dzshzx/codexcomp) 与 [neteroster / CodexCont](https://github.com/neteroster/CodexCont) 的续接机制与算法。
 
-[English](README_EN.md) · [下载 v0.1.1](https://github.com/chatwithgod/cpa-plugin-codexreflow/releases/tag/v0.1.1) · [反馈问题](https://github.com/chatwithgod/cpa-plugin-codexreflow/issues/new?template=bug_report.md)
+[English](README_EN.md) · [下载 v0.1.2](https://github.com/chatwithgod/cpa-plugin-codexreflow/releases/tag/v0.1.2) · [反馈问题](https://github.com/chatwithgod/cpa-plugin-codexreflow/issues/new?template=bug_report.md)
 
 ## 它能做什么？
 
@@ -23,7 +23,7 @@ GPT 经常只想了 `516` 个 token 就草草交卷？CodexReflow 是一个 [CLI
 推荐直接在 **CPA / ECPA 插件商店**安装：
 
 1. 打开「插件 → 插件商店」，搜索 **CodexReflow**。
-2. 点击安装（版本留空默认安装最新发布版，也可手动填写 `v0.1.1`）。
+2. 点击安装（版本留空默认安装最新发布版，也可手动填写 `v0.1.2`）。
 3. 在本地插件列表中启用 CodexReflow，确认显示为“运行中”。
 4. 像往常一样在客户端使用即可。**全新配置开箱即用，不需要手写 YAML，也不用配置模型名单。**
 
@@ -33,19 +33,19 @@ GPT 经常只想了 `516` 个 token 就草草交卷？CodexReflow 是一个 [CLI
 - 更新插件版本前，建议先保留旧插件并备份现有配置，等待当前正在生成的回答全部结束。
 
 <details>
-<summary>手动下载 v0.1.1（点击展开）</summary>
+<summary>手动下载 v0.1.2（点击展开）</summary>
 
 按操作系统与架构下载对应压缩包：
 
 | 平台 | 下载链接 |
 |---|---|
-| Windows x64 | [codexreflow_0.1.1_windows_amd64.zip](https://github.com/chatwithgod/cpa-plugin-codexreflow/releases/download/v0.1.1/codexreflow_0.1.1_windows_amd64.zip) |
-| Linux x64 | [codexreflow_0.1.1_linux_amd64.zip](https://github.com/chatwithgod/cpa-plugin-codexreflow/releases/download/v0.1.1/codexreflow_0.1.1_linux_amd64.zip) |
-| Linux ARM64 | [codexreflow_0.1.1_linux_arm64.zip](https://github.com/chatwithgod/cpa-plugin-codexreflow/releases/download/v0.1.1/codexreflow_0.1.1_linux_arm64.zip) |
-| macOS Intel | [codexreflow_0.1.1_darwin_amd64.zip](https://github.com/chatwithgod/cpa-plugin-codexreflow/releases/download/v0.1.1/codexreflow_0.1.1_darwin_amd64.zip) |
-| macOS Apple Silicon | [codexreflow_0.1.1_darwin_arm64.zip](https://github.com/chatwithgod/cpa-plugin-codexreflow/releases/download/v0.1.1/codexreflow_0.1.1_darwin_arm64.zip) |
+| Windows x64 | [codexreflow_0.1.2_windows_amd64.zip](https://github.com/chatwithgod/cpa-plugin-codexreflow/releases/download/v0.1.2/codexreflow_0.1.2_windows_amd64.zip) |
+| Linux x64 | [codexreflow_0.1.2_linux_amd64.zip](https://github.com/chatwithgod/cpa-plugin-codexreflow/releases/download/v0.1.2/codexreflow_0.1.2_linux_amd64.zip) |
+| Linux ARM64 | [codexreflow_0.1.2_linux_arm64.zip](https://github.com/chatwithgod/cpa-plugin-codexreflow/releases/download/v0.1.2/codexreflow_0.1.2_linux_arm64.zip) |
+| macOS Intel | [codexreflow_0.1.2_darwin_amd64.zip](https://github.com/chatwithgod/cpa-plugin-codexreflow/releases/download/v0.1.2/codexreflow_0.1.2_darwin_amd64.zip) |
+| macOS Apple Silicon | [codexreflow_0.1.2_darwin_arm64.zip](https://github.com/chatwithgod/cpa-plugin-codexreflow/releases/download/v0.1.2/codexreflow_0.1.2_darwin_arm64.zip) |
 
-下载后建议通过 [checksums.txt](https://github.com/chatwithgod/cpa-plugin-codexreflow/releases/download/v0.1.1/checksums.txt) 校验 SHA256。各平台的测试覆盖与已知限制见[兼容性说明](docs/COMPATIBILITY.md)。
+下载后建议通过 [checksums.txt](https://github.com/chatwithgod/cpa-plugin-codexreflow/releases/download/v0.1.2/checksums.txt) 校验 SHA256。各平台的测试覆盖与已知限制见[兼容性说明](docs/COMPATIBILITY.md)。
 
 </details>
 
@@ -109,6 +109,8 @@ CodexReflow 针对后者：给疑似被提前截断的推理争取继续思考�
 具体日志指标与排查工具见[诊断说明](docs/DIAGNOSTICS.md)。
 
 ### WebSocket 连接能正常续接吗？
+
+预热请求（`generate: false`）由 CPA 原生处理。`v0.1.2` 修复了空输入 `[]` 被改成 `null`、导致预热报 HTTP 400 的问题。
 
 支持。但后续轮次的续接依赖完整可用的上下文、有效的上游加密推理状态，以及其余续接条件。如果上下文缺失、过期或超出了缓存大小，该请求可能不会续接。目前并非所有客户端或平台都做了全量验证。
 

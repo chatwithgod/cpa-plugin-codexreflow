@@ -8,7 +8,7 @@ When a response matches this pattern, usable context and upstream reasoning stat
 
 **Project origins:** Independently maintained fork of [uf-hy / CPA CodexComp v0.1.7](https://github.com/uf-hy/cpa-plugin-codexcomp/tree/v0.1.7), carrying forward continuation algorithms and mechanisms from [dzshzx / codexcomp](https://github.com/dzshzx/codexcomp) and [neteroster / CodexCont](https://github.com/neteroster/CodexCont).
 
-[简体中文](README.md) · [Download v0.1.1](https://github.com/chatwithgod/cpa-plugin-codexreflow/releases/tag/v0.1.1) · [Report a problem](https://github.com/chatwithgod/cpa-plugin-codexreflow/issues/new?template=bug_report.md)
+[简体中文](README.md) · [Download v0.1.2](https://github.com/chatwithgod/cpa-plugin-codexreflow/releases/tag/v0.1.2) · [Report a problem](https://github.com/chatwithgod/cpa-plugin-codexreflow/issues/new?template=bug_report.md)
 
 ## What it does
 
@@ -23,7 +23,7 @@ When a response matches this pattern, usable context and upstream reasoning stat
 The easiest way is via the **CPA / ECPA Plugin Store**:
 
 1. Open **Plugins → Plugin Store** and search for **CodexReflow**.
-2. Click **Install**. Leave the version blank for the latest release, or enter `v0.1.1`.
+2. Click **Install**. Leave the version blank for the latest release, or enter `v0.1.2`.
 3. Enable CodexReflow in your local plugin list and confirm its status shows **Running**.
 4. Use your client as usual. **Fresh installations require no handwritten YAML and no model list.**
 
@@ -33,19 +33,19 @@ The easiest way is via the **CPA / ECPA Plugin Store**:
 - Before updating versions, keep a copy of the previous plugin and configuration, and wait for ongoing responses to complete.
 
 <details>
-<summary>Manual downloads for v0.1.1 (click to expand)</summary>
+<summary>Manual downloads for v0.1.2 (click to expand)</summary>
 
 Download the release archive for your operating system and architecture:
 
 | Platform | Download link |
 |---|---|
-| Windows x64 | [codexreflow_0.1.1_windows_amd64.zip](https://github.com/chatwithgod/cpa-plugin-codexreflow/releases/download/v0.1.1/codexreflow_0.1.1_windows_amd64.zip) |
-| Linux x64 | [codexreflow_0.1.1_linux_amd64.zip](https://github.com/chatwithgod/cpa-plugin-codexreflow/releases/download/v0.1.1/codexreflow_0.1.1_linux_amd64.zip) |
-| Linux ARM64 | [codexreflow_0.1.1_linux_arm64.zip](https://github.com/chatwithgod/cpa-plugin-codexreflow/releases/download/v0.1.1/codexreflow_0.1.1_linux_arm64.zip) |
-| macOS Intel | [codexreflow_0.1.1_darwin_amd64.zip](https://github.com/chatwithgod/cpa-plugin-codexreflow/releases/download/v0.1.1/codexreflow_0.1.1_darwin_amd64.zip) |
-| macOS Apple Silicon | [codexreflow_0.1.1_darwin_arm64.zip](https://github.com/chatwithgod/cpa-plugin-codexreflow/releases/download/v0.1.1/codexreflow_0.1.1_darwin_arm64.zip) |
+| Windows x64 | [codexreflow_0.1.2_windows_amd64.zip](https://github.com/chatwithgod/cpa-plugin-codexreflow/releases/download/v0.1.2/codexreflow_0.1.2_windows_amd64.zip) |
+| Linux x64 | [codexreflow_0.1.2_linux_amd64.zip](https://github.com/chatwithgod/cpa-plugin-codexreflow/releases/download/v0.1.2/codexreflow_0.1.2_linux_amd64.zip) |
+| Linux ARM64 | [codexreflow_0.1.2_linux_arm64.zip](https://github.com/chatwithgod/cpa-plugin-codexreflow/releases/download/v0.1.2/codexreflow_0.1.2_linux_arm64.zip) |
+| macOS Intel | [codexreflow_0.1.2_darwin_amd64.zip](https://github.com/chatwithgod/cpa-plugin-codexreflow/releases/download/v0.1.2/codexreflow_0.1.2_darwin_amd64.zip) |
+| macOS Apple Silicon | [codexreflow_0.1.2_darwin_arm64.zip](https://github.com/chatwithgod/cpa-plugin-codexreflow/releases/download/v0.1.2/codexreflow_0.1.2_darwin_arm64.zip) |
 
-Verify SHA256 hashes against [checksums.txt](https://github.com/chatwithgod/cpa-plugin-codexreflow/releases/download/v0.1.1/checksums.txt). For platform coverage and known constraints, see the [compatibility notes](docs/COMPATIBILITY.md).
+Verify SHA256 hashes against [checksums.txt](https://github.com/chatwithgod/cpa-plugin-codexreflow/releases/download/v0.1.2/checksums.txt). For platform coverage and known constraints, see the [compatibility notes](docs/COMPATIBILITY.md).
 
 </details>
 
@@ -109,6 +109,8 @@ Do not rely on the plugin switch status or a single token count alone. Check the
 For log fields and inspection tools, see the [diagnostics guide](docs/DIAGNOSTICS.md).
 
 ### Does WebSocket continuation work?
+
+Warmup requests (`generate: false`) stay on CPA's native path. `v0.1.2` fixes empty input arrays `[]` being changed to `null`, which caused HTTP 400 during warmup.
 
 Yes. Subsequent rounds require complete, available context and valid upstream encrypted reasoning state, along with the remaining continuation conditions. If context is missing, expired, or exceeds cache limits, that request may not be continued. Not all client and platform combinations have undergone full validation.
 

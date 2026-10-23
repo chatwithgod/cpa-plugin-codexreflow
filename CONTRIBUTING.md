@@ -37,11 +37,14 @@ python scripts/isolated_cpa_smoke.py <CPA可执行文件> build/codexreflow.dll 
 python scripts/isolated_cpa_smoke.py <CPA可执行文件> build/codexreflow.dll --auto-models --report build/isolated-auto-models.json
 python scripts/ws_incremental_smoke.py --cpa <CPA可执行文件> --dll build/codexreflow.dll --native-folds --report build/ws-incremental.json
 python scripts/ws_incremental_fold_smoke.py --cpa <CPA可执行文件> --dll build/codexreflow.dll --report build/ws-incremental-fold.json
+python scripts/ws_prewarm_smoke.py --cpa <CPA可执行文件> --dll <待验收动态库> --cpa-version 8.0.38 --report build/ws-prewarm.json
 ```
 
 使用其他宿主版本时，明确追加对应的 `--cpa-version`，例如 `--cpa-version 8.0.16`。测试会核对实际版本；填写参数本身不代表该版本已经通过验证。
 
 测试启动独立端口、空账号目录和本地模拟上游，不读取生产账号或配置。覆盖 HTTP/SSE、WebSocket、续接、工具事件、上下文衔接及异常终止。模拟测试不替代真实客户端的完整体验验证。
+
+预热回归会分别发送空数组和非空输入的 `generate: false` 请求，检查预热原样通过，再在同一条 WebSocket 上生成下一轮回答。它同时核对上下游均使用 WebSocket，避免把 HTTP 回退算作预热通过。
 
 SDK 固定为 CPA `v8.0.13`。五个平台的原生构建、包内动态库验证和构件汇总方法见[五平台构建说明](docs/MULTIPLATFORM.md)。
 

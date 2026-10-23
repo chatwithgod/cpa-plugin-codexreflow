@@ -152,6 +152,11 @@ func TestAutoRoutingRetainsRequestGuardsAndModelID(t *testing.T) {
 	}{
 		{"new model", "gpt-6-astra", "openai-response", `{"input":[]}`, true, true},
 		{"prefix and suffix", "team/gpt-6-sol(max)", "openai-response", `{"input":[]}`, true, true},
+		{"empty prewarm", "gpt-6-sol", "openai-response", `{"input":[],"generate":false}`, true, false},
+		{"nonempty prewarm", "gpt-6-sol", "openai-response", `{"input":[{"role":"user","content":"fixture"}],"generate":false}`, true, false},
+		{"chat prewarm", "gpt-6-sol", "openai", `{"messages":[],"generate":false}`, true, false},
+		{"claude prewarm", "gpt-6-sol", "claude", `{"messages":[],"generate":false}`, true, false},
+		{"explicit generation", "gpt-6-sol", "openai-response", `{"input":[],"generate":true}`, true, true},
 		{"string input", "gpt-6-sol", "openai-response", `{"input":"fixture"}`, true, false},
 		{"incremental", "gpt-6-sol", "openai-response", `{"input":[],"previous_response_id":"fixture"}`, true, false},
 		{"nonstream", "gpt-6-sol", "openai-response", `{"input":[]}`, false, false},
