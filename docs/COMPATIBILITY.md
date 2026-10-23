@@ -1,8 +1,16 @@
 # 兼容性与验收边界
 
-## 正式发布与证据分层
+## 当前正式版 v0.1.2（2026-10-24）
 
-最新 [`v0.1.1`](https://github.com/LaoPiLao/cpa-plugin-codexreflow/releases/tag/v0.1.1) 于 2026-10-09 公开，
+[`v0.1.2`](https://github.com/chatwithgod/cpa-plugin-codexreflow/releases/tag/v0.1.2) 修复 WebSocket 预热请求被接管、空输入 `[]` 被改成 `null` 导致 HTTP 400 的问题。`generate: false` 留在 CPA 原生路径；普通流式请求同样保留空数组。
+
+五个平台各通过 Go unit/race/vet/fuzz、47 项 Python 回归，以及构建库和包内库各 34 项原生 ABI 用例。同一 Windows 正式 DLL 通过 CPA 8.0.13 的 50 项 HTTP/WS/续接回归和 CPA 8.0.38 的 2 项预热回归。五个 ZIP 与 checksums 经匿名下载逐字节核对。SDK 仍固定 v8.0.13。
+
+这些 CPA 测试使用本地模拟上游；Linux/macOS 实际 CPA/客户端/模型集成仍待独立验收。完整源码、构件哈希及证据范围见 [v0.1.2 发布记录](RELEASE-2026-10-24-0.1.2.md)。
+
+## 历史正式发布与证据分层
+
+此前 [`v0.1.1`](https://github.com/LaoPiLao/cpa-plugin-codexreflow/releases/tag/v0.1.1) 于 2026-10-09 公开，
 提供 Windows amd64、Linux amd64/arm64、macOS amd64/arm64 包。
 [发布源提交的原生 CI](https://github.com/LaoPiLao/cpa-plugin-codexreflow/actions/runs/37916034316)
 五平台各通过 Go unit/race/vet/fuzz、47 项 Python 回归、原库及包内库各 31 项 C ABI 合成宿主案例；

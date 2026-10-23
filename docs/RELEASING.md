@@ -1,6 +1,12 @@
 # 发布清单
 
-## 当前发布与商店状态 — 2026-10-09
+## 当前正式版 v0.1.2 — 2026-10-24
+
+[`v0.1.2`](https://github.com/chatwithgod/cpa-plugin-codexreflow/releases/tag/v0.1.2) 已正式发布并读回为 latest stable。源码标签固定到 `2769784c70ce3786c48cff3b342f95e29f254975`；五平台原生 CI、47 项 Python、每平台原库/包内库各 34 项 ABI 均通过。Windows 正式字节另通过 CPA 8.0.13 的 50 项 HTTP/WS 回归与 CPA 8.0.38 的 2 项预热检查。
+
+五个 ZIP 和统一 checksums 已经匿名下载核对，与被测 CI 构件相同。完整证据和 SHA256 见 [本版发布记录](RELEASE-2026-10-24-0.1.2.md)。正式构件的声明仓库为 `https://github.com/chatwithgod/cpa-plugin-codexreflow`；CPA SDK 仍固定 `8.0.13`。旧 Release、标签和本地开发构件保留。
+
+## v0.1.1 发布与商店状态（历史）— 2026-10-09
 
 [`v0.1.1` 五平台 Release](https://github.com/LaoPiLao/cpa-plugin-codexreflow/releases/tag/v0.1.1)
 已于 2026-10-09 18:43:21（UTC+8）公开并读回为 latest stable，五个 ZIP / 统一 checksums

@@ -2,6 +2,8 @@
 
 ## 0.1.2
 
+Published on 2026-10-24 with five native platform packages. See [release and byte-level verification](docs/RELEASE-2026-10-24-0.1.2.md).
+
 - Fix HTTP 400 during Codex WebSocket warmup: requests with `generate: false` remain on CPA's native route, preserving empty `input: []` and the response ID used by the next turn.
 - Preserve non-nil empty input arrays when copying ordinary streaming requests, so the executor does not serialize them as `input: null`.
 - Add routing and actual-library regression coverage for empty/non-empty warmups and empty-array forwarding, plus an isolated CPA 8.0.38 WebSocket test that continues on the same connection.

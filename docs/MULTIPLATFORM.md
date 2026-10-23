@@ -1,5 +1,11 @@
 # 五平台构建、验收与发布边界
 
+## 当前正式版 v0.1.2
+
+`v0.1.2` 已完成五个平台的原生构建和公开下载核验。当前完整 ABI 套件为 34 项，每个平台在构建库、包内库上各执行一组；每组共 170 次执行。完整来源、Windows CPA 回归与公开资产哈希见 [2026-10-24 发布记录](RELEASE-2026-10-24-0.1.2.md)。
+
+下文保留 v0.1.1 的发布背景，通用构建命令和示例输出目录已按当前版更新。
+
 ## 目的与授权边界
 
 商店 [PR #222](https://github.com/router-for-me/CLIProxyAPI-Plugins-Store/pull/222) 因缺少 Linux/macOS 资产被关闭，
@@ -32,7 +38,7 @@ runner 名称/架构依据 [GitHub 官方列表](https://docs.github.com/en/acti
 [PR #225](https://github.com/router-for-me/CLIProxyAPI-Plugins-Store/pull/225) 已于 10 月 10 日合并，10 月 11 日读回官方注册表已收录。
 见 [收录核对记录](STORE-LISTING-2026-10-11.md)及历史[商店重提记录](STORE-SUBMISSION-2026-10-09-0.1.1.md)。本次同步文档，不另发/评论 PR、不安装或启用生产插件、不调用真实模型。
 `v0.1.0` / `v0.1.1` 正文、ZIP、checksums、远程标签及此前开发构件保留不动。
-`VERSION` 仍为 `0.1.1`；此后 CI 产生的新候选与已发布字节区分，不能覆盖同名 Release 资产。
+当次发布的 `VERSION` 为 `0.1.1`，当前为 `0.1.2`；此后 CI 产生的新候选与已发布字节区分，不能覆盖同名 Release 资产。
 工作流权限为 `contents: read`，仅上传有期限的 CI 候选 artifact，没有自动发布步骤。
 
 ## 每个平台的实际检查
@@ -42,14 +48,14 @@ runner 名称/架构依据 [GitHub 官方列表](https://docs.github.com/en/acti
 1. 确认源码已提交、宿主/Go 架构一致、CGO 开启、Go/SDK 固定。
 2. 对根目录 Go 模块字节快照运行 unit、race、vet 和 15 秒 decoder fuzz，避开 ignored `build` 内的其他项目。
 3. 用明确版本和本项目仓库链接生成 **新的** c-shared 动态库，不覆盖原来的非版本化构建。
-4. 跑全部 Python 回归（发布源提交为 47 项）和实际库的 31 项 C ABI mock-host 测试；核对库哈希及测试版本。
+4. 跑全部 Python 回归（当前为 47 项）和实际库的 34 项 C ABI mock-host 测试；核对库哈希及测试版本。
 5. `package_release.py` 检查 PE/ELF/Mach-O 类型与架构，真实加载并读回插件 ID/版本/仓库；只打包动态库及三个保留许可文件。
-6. 读回 ZIP、CRC、许可字节和原始库字节，只把已验证的根库写入新路径，重跑同一组 31 项原生测试。
+6. 读回 ZIP、CRC、许可字节和原始库字节，只把已验证的根库写入新路径，重跑同一组 34 项原生测试。
 7. 输出同提交/Go 源码指纹/同库的脱敏报告与 validation 记录；不把 raw 日志或配置塞入 ZIP。
 
 输出目录及同名包不可覆盖。校验报告中的 unknown/失败不改成成功，缺一平台或报告不全即失败。
 原生 ABI mock 使用合成宿主回调，**不是实际 CPA 进程/HTTP/WS、真实模型或 Desktop 测试**。
-同一组 31 项在五种主机重复执行为 155 次；包装后再执行同组 155 次，不宣传为 310 种独立场景。
+同一组 34 项在五种主机重复执行为 170 次；包装后再执行同组 170 次，不宣传为 340 种独立场景。
 
 ## 本地使用
 
@@ -63,7 +69,7 @@ python scripts/build_platform.py --goos linux --goarch arm64
 python scripts/build_platform.py --goos darwin --goarch arm64
 ```
 
-默认本地新库：`build/platform-<goos>-<goarch>/`；平台候选：`dist/0.1.1/<goos>_<goarch>/`。
+默认本地新库：`build/platform-<goos>-<goarch>/`；平台候选：`dist/0.1.2/<goos>_<goarch>/`。
 重跑必须选择新的 `--build-dir` / `--output-dir`（仍在 ignored build/dist 下），不删除或覆盖历史输出。
 
 ## 五平台汇总
@@ -72,7 +78,7 @@ python scripts/build_platform.py --goos darwin --goarch arm64
 下载目录必须恰好包含五个平台子目录。每个子目录包含：
 
 ```text
-codexreflow_0.1.1_<goos>_<goarch>.zip
+codexreflow_0.1.2_<goos>_<goarch>.zip
 checksums.txt
 registration.json
 native-smoke.json
@@ -83,7 +89,7 @@ validation.json
 汇总命令：
 
 ```text
-python scripts/assemble_release.py --input-dir .tools/platform-artifacts --output-dir dist/full-platform-candidate --repository https://github.com/LaoPiLao/cpa-plugin-codexreflow
+python scripts/assemble_release.py --input-dir .tools/platform-artifacts --output-dir dist/full-platform-candidate --repository https://github.com/chatwithgod/cpa-plugin-codexreflow
 ```
 
 汇总器不执行外平台库；验证的是同次可信 CI 的原生报告，不是密码学证明或全面集成认证。
