@@ -1,20 +1,22 @@
 # CodexReflow
 
-**Automatically continue eligible GPT requests.**
+**Built to address GPT chain-of-thought truncation—give unfinished reasoning a chance to continue.**
 
-CodexReflow is a continuation plugin for [CLIProxyAPI](https://github.com/router-for-me/CLIProxyAPI) (CPA). When a reasoning-token count matches a specific pattern, the plugin checks upstream reasoning state and continuation limits, decides whether to request another round, and combines the results for your client.
+Does GPT stop at `516` reasoning tokens and rush out an answer? CodexReflow is a [CLIProxyAPI](https://github.com/router-for-me/CLIProxyAPI) (CPA) plugin targeting the recurring `518n-2` pattern: `516`, `1034`, `1552`, and so on. It automatically requests more reasoning to help the model think a problem through instead of handing in an answer too soon.
 
-**Project origins:** Independently maintained fork of [uf-hy / CPA CodexComp v0.1.7](https://github.com/uf-hy/cpa-plugin-codexcomp/tree/v0.1.7), carrying forward continuation algorithms and mechanisms originally created by [dzshzx / codexcomp](https://github.com/dzshzx/codexcomp) and [neteroster / CodexCont](https://github.com/neteroster/CodexCont).
+When a response matches this pattern, usable context and upstream reasoning state are available, and the continuation limit has not been reached, the plugin requests another round and combines the responses for your client.
+
+**Project origins:** Independently maintained fork of [uf-hy / CPA CodexComp v0.1.7](https://github.com/uf-hy/cpa-plugin-codexcomp/tree/v0.1.7), carrying forward continuation algorithms and mechanisms from [dzshzx / codexcomp](https://github.com/dzshzx/codexcomp) and [neteroster / CodexCont](https://github.com/neteroster/CodexCont).
 
 [简体中文](README.md) · [Download v0.1.1](https://github.com/chatwithgod/cpa-plugin-codexreflow/releases/tag/v0.1.1) · [Report a problem](https://github.com/chatwithgod/cpa-plugin-codexreflow/issues/new?template=bug_report.md)
 
 ## What it does
 
-- **Automatic continuation**: Triggers follow-up rounds based on numeric rules, upstream reasoning state and continuation limits, not semantic guesses about whether an answer feels finished.
-- **Zero model-list upkeep**: Out of the box, it automatically matches lowercase standard GPT-5+ text model names without requiring manual lists.
-- **Dual protocol support**: Handles streaming output over both HTTP/SSE and WebSocket.
+- **Automatic reasoning continuation**: Applies continuation rules such as `518n-2`, requests further rounds when conditions are met, and combines the answer—no manual “keep thinking” messages.
+- **Ready out of the box**: Fresh configurations automatically match standard GPT-5+ text model names without a handwritten model list.
+- **Dual protocol streaming**: Supports both HTTP/SSE and WebSocket streams.
 
-> **Note**: Continuation rounds consume additional tokens and increase response latency. The plugin does not "cure model degradation," cannot guarantee deeper reasoning or smarter answers, and does not unconditionally continue every request that shows 516.
+> **Cost note**: Continuation consumes extra tokens and increases wait time. Additional reasoning and any improvement in answer quality vary by request.
 
 ## Installation and use
 
@@ -47,6 +49,27 @@ Verify SHA256 hashes against [checksums.txt](https://github.com/chatwithgod/cpa-
 
 </details>
 
+## Why address “516 degradation”?
+
+“Degradation” describes worse answers, but two different problems are worth separating:
+
+- **Routing downgrade**: A request is sent to a different, less capable model.
+- **Systemic degradation (our informal term here)**: Repeated constraints on reasoning lead to answers before the problem has been properly thought through. Reasoning truncation is the specific problem this project targets.
+
+CodexReflow focuses on the latter: giving potentially truncated reasoning a chance to continue, rather than switching models. It neither verifies the actual upstream model's identity nor fixes model substitution.
+
+### What do community tests show?
+
+In [openai/codex #29353](https://github.com/openai/codex/issues/29353), the author opened five fresh chats with `gpt-5.5 / xhigh` and the same English candy math problem. Both **516-token** runs answered incorrectly; the other three, using **3,904–7,766 reasoning tokens**, answered correctly.
+
+[![Five community trials: two incorrect 516-token runs and three correct longer-reasoning runs](docs/assets/candy-observation-en.svg)](https://github.com/openai/codex/issues/29353)
+
+*Original visualization of public observations reported by gydx6. These are five trials of one problem—not a CodexReflow on/off comparison or an accuracy estimate across models.*
+
+The useful question is not just how many tokens were used, but **whether early stops coincide with worse answers**. A larger [community analysis, #30364](https://github.com/openai/codex/issues/30364), also reported clustering at fixed token boundaries, while explicitly stopping short of proving hidden reasoning truncation. We use those boundaries as continuation signals, not as an officially confirmed explanation of upstream internals.
+
+To observe similar behavior in your own environment, see [haowang02 / codex-candy-eval](https://github.com/haowang02/codex-candy-eval/tree/29127fa5a12fb7654e865f684dcaf55ade181349). That version repeats one problem and grades answers by checking for a standalone `21`. It is a useful diagnostic probe, not a comprehensive intelligence benchmark.
+
 ## Default behavior and configuration
 
 **Most users can run with defaults without modifying configuration.**
@@ -68,9 +91,12 @@ Verify SHA256 hashes against [checksums.txt](https://github.com/chatwithgod/cpa-
 
 ### Why do usage records still show 516?
 
-CPA may log the initial request and each continuation round separately. Even after a successful continuation, the first round's 516 entry remains in the log, and follow-up rounds can legitimately add 0 new reasoning tokens.
+Continuation does not replace a historical 516 entry with a different number. It requests another round after the first:
 
-**Seeing 516 does not mean the plugin failed, nor does it prove model degradation.** The plugin triggers only when requests meet continuation rules alongside usable upstream reasoning state—it does not blindly resend every 516 request.
+1. **The initial record remains**: CPA may record the initial and continuation rounds separately. A successful continuation does not remove the first round's 516 entry.
+2. **More rounds do not always mean more reasoning tokens**: A follow-up may add reasoning or proceed directly to an answer, so it can add 0 reasoning tokens.
+
+Look at the whole request: whether continuation happened, whether it completed, and the quality of the answer received by your client—not a single 516 entry.
 
 ### How do I verify that continuation actually happened?
 
