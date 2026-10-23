@@ -2,114 +2,119 @@
 
 **Automatically continue eligible GPT requests.**
 
-CodexReflow is a plugin for [CLIProxyAPI](https://github.com/router-for-me/CLIProxyAPI) (CPA). When a response meets its reasoning-truncation rules, it requests another round and merges the results for the client. It is intended for people already using Codex or another compatible client through CPA.
+CodexReflow is a continuation plugin for [CLIProxyAPI](https://github.com/router-for-me/CLIProxyAPI) (CPA). When a reasoning-token count matches a specific pattern, the plugin checks upstream reasoning state and continuation limits, decides whether to request another round, and combines the results for your client.
 
-**Project origins:** An independently maintained fork of [uf-hy / CPA CodexComp v0.1.7](https://github.com/uf-hy/cpa-plugin-codexcomp/tree/v0.1.7), retaining the algorithms and continuation mechanism derived through that project from [dzshzx / codexcomp](https://github.com/dzshzx/codexcomp) and [neteroster / CodexCont](https://github.com/neteroster/CodexCont).
+**Project origins:** Independently maintained fork of [uf-hy / CPA CodexComp v0.1.7](https://github.com/uf-hy/cpa-plugin-codexcomp/tree/v0.1.7), carrying forward continuation algorithms and mechanisms originally created by [dzshzx / codexcomp](https://github.com/dzshzx/codexcomp) and [neteroster / CodexCont](https://github.com/neteroster/CodexCont).
 
-[简体中文](README.md) · [Download v0.1.1](https://github.com/LaoPiLao/cpa-plugin-codexreflow/releases/tag/v0.1.1) · [Report a problem](https://github.com/LaoPiLao/cpa-plugin-codexreflow/issues/new?template=bug_report.md)
+[简体中文](README.md) · [Download v0.1.1](https://github.com/chatwithgod/cpa-plugin-codexreflow/releases/tag/v0.1.1) · [Report a problem](https://github.com/chatwithgod/cpa-plugin-codexreflow/issues/new?template=bug_report.md)
 
 ## What it does
 
-- **Continues eligible responses:** up to three additional rounds by default.
-- **Works with HTTP and WebSocket:** handles streaming events over both, including HTTP/SSE.
-- **Avoids maintaining a model list:** fresh configurations automatically match standard GPT-5+ text-model names.
+- **Automatic continuation**: Triggers follow-up rounds based on numeric rules, upstream reasoning state and continuation limits, not semantic guesses about whether an answer feels finished.
+- **Zero model-list upkeep**: Out of the box, it automatically matches lowercase standard GPT-5+ text model names without requiring manual lists.
+- **Dual protocol support**: Handles streaming output over both HTTP/SSE and WebSocket.
 
-Continuations consume additional tokens and may increase waiting time. They do not guarantee more reasoning or better answers.
+> **Note**: Continuation rounds consume additional tokens and increase response latency. The plugin does not "cure model degradation," cannot guarantee deeper reasoning or smarter answers, and does not unconditionally continue every request that shows 516.
 
-## Install and use
+## Installation and use
 
-The recommended route is the **CPA / ECPA plugin store**:
+The easiest way is via the **CPA / ECPA Plugin Store**:
 
-1. Open the plugin store and search for **CodexReflow**.
-2. Install it. If prompted for a version, enter `v0.1.1`, or leave the field empty to use the repository's latest release.
-3. Enable CodexReflow in the local plugin list and check that it is running.
-4. Keep using your existing client. **A fresh configuration needs no handwritten YAML or model list.**
+1. Open **Plugins → Plugin Store** and search for **CodexReflow**.
+2. Click **Install**. Leave the version blank for the latest release, or enter `v0.1.1`.
+3. Enable CodexReflow in your local plugin list and confirm its status shows **Running**.
+4. Use your client as usual. **Fresh installations require no handwritten YAML and no model list.**
 
-If you use CodexComp, disable it before enabling CodexReflow so that both plugins do not handle the same models.
+**Important reminders**:
 
-Existing users can update through the version-selection action. Keep the previous plugin and configuration for rollback, and wait for active responses to finish before updating.
+- If you were using CodexComp, disable it first so that both plugins do not handle the same models at once.
+- Before updating versions, keep a copy of the previous plugin and configuration, and wait for ongoing responses to complete.
 
 <details>
-<summary>Manual downloads for v0.1.1</summary>
+<summary>Manual downloads for v0.1.1 (click to expand)</summary>
 
-Choose the package for your operating system and CPU architecture:
+Download the release archive for your operating system and architecture:
 
-| Platform | Package |
+| Platform | Download link |
 |---|---|
-| Windows x64 | [Download](https://github.com/LaoPiLao/cpa-plugin-codexreflow/releases/download/v0.1.1/codexreflow_0.1.1_windows_amd64.zip) |
-| Linux x64 | [Download](https://github.com/LaoPiLao/cpa-plugin-codexreflow/releases/download/v0.1.1/codexreflow_0.1.1_linux_amd64.zip) |
-| Linux ARM64 | [Download](https://github.com/LaoPiLao/cpa-plugin-codexreflow/releases/download/v0.1.1/codexreflow_0.1.1_linux_arm64.zip) |
-| macOS Intel | [Download](https://github.com/LaoPiLao/cpa-plugin-codexreflow/releases/download/v0.1.1/codexreflow_0.1.1_darwin_amd64.zip) |
-| macOS Apple Silicon | [Download](https://github.com/LaoPiLao/cpa-plugin-codexreflow/releases/download/v0.1.1/codexreflow_0.1.1_darwin_arm64.zip) |
+| Windows x64 | [codexreflow_0.1.1_windows_amd64.zip](https://github.com/chatwithgod/cpa-plugin-codexreflow/releases/download/v0.1.1/codexreflow_0.1.1_windows_amd64.zip) |
+| Linux x64 | [codexreflow_0.1.1_linux_amd64.zip](https://github.com/chatwithgod/cpa-plugin-codexreflow/releases/download/v0.1.1/codexreflow_0.1.1_linux_amd64.zip) |
+| Linux ARM64 | [codexreflow_0.1.1_linux_arm64.zip](https://github.com/chatwithgod/cpa-plugin-codexreflow/releases/download/v0.1.1/codexreflow_0.1.1_linux_arm64.zip) |
+| macOS Intel | [codexreflow_0.1.1_darwin_amd64.zip](https://github.com/chatwithgod/cpa-plugin-codexreflow/releases/download/v0.1.1/codexreflow_0.1.1_darwin_amd64.zip) |
+| macOS Apple Silicon | [codexreflow_0.1.1_darwin_arm64.zip](https://github.com/chatwithgod/cpa-plugin-codexreflow/releases/download/v0.1.1/codexreflow_0.1.1_darwin_arm64.zip) |
 
-Verify the SHA256 against [checksums.txt](https://github.com/LaoPiLao/cpa-plugin-codexreflow/releases/download/v0.1.1/checksums.txt). See the [compatibility notes](docs/COMPATIBILITY.md) for platform coverage and known limitations.
+Verify SHA256 hashes against [checksums.txt](https://github.com/chatwithgod/cpa-plugin-codexreflow/releases/download/v0.1.1/checksums.txt). For platform coverage and known constraints, see the [compatibility notes](docs/COMPATIBILITY.md).
 
 </details>
 
-## Do I need to configure it?
+## Default behavior and configuration
 
-**Most users can keep the defaults.**
+**Most users can run with defaults without modifying configuration.**
 
-| Setting | Default behavior |
+| Option | Default behavior |
 |---|---|
-| Model selection | Automatically matches standard GPT text-model names such as `gpt-6-astra`, `gpt-6-sol` and `gpt-6-luna` |
-| Continuation limit | Up to 3 additional rounds, or 4 rounds including the original request |
-| Non-text models | Names marked as image, audio, realtime and other non-text families are excluded from automatic matching |
-| Debug logging | Off; basic continuation diagnostics remain available |
+| **Model matching (`model_mode: auto`)** | Matches lowercase standard GPT-5+ text model names (e.g. `gpt-6-astra`, `gpt-6-sol`, `gpt-6-luna`, including routing prefixes and reasoning suffixes). |
+| **Continuation limit (`max_continue: 3`)** | Appends up to 3 additional rounds per request (maximum 4 total rounds including the initial request). |
+| **Automatic exclusions** | Model names containing non-text segments such as `image`, `audio`, or `realtime` are automatically excluded. |
+| **Diagnostics (`debug_log: false`)** | Detailed debug logging is disabled by default; essential continuation diagnostics remain active. |
 
-Automatic matching uses the **model name in the request**. It does not synchronize CPA's model catalog. Custom aliases such as `my-coder` need manual selection.
+**Key points**:
 
-Upgrades preserve the selection behavior of existing `models` lists. Set `model_mode` to `auto` if you want to switch to automatic matching.
+- Auto mode matches the **model name provided in the client request**. It does not sync CPA's model catalog or detect underlying model capabilities. Custom aliases like `my-coder` require manual list configuration.
+- **Upgrading from older configs**: If your old configuration contains a `models` list without an explicit `model_mode`, upgrading preserves its legacy list behavior. To switch to automatic matching, explicitly set `model_mode: auto` (which ignores legacy `models`).
+- For custom exclusions, round limits, or manual lists, see the [configuration reference](docs/CONFIGURATION.md).
 
-See the [configuration reference](docs/CONFIGURATION.md) when you need exclusions, a lower continuation limit or custom aliases.
-
-## Common questions
+## FAQ and troubleshooting
 
 ### Why do usage records still show 516?
 
-CPA may record the original request and each continuation separately. The original 516 entry remains even when a continuation succeeds. An additional round may also produce no new reasoning tokens.
+CPA may log the initial request and each continuation round separately. Even after a successful continuation, the first round's 516 entry remains in the log, and follow-up rounds can legitimately add 0 new reasoning tokens.
 
-**Seeing 516 does not prove that the plugin failed or that a model was downgraded.** Continuation depends on a numeric heuristic and usable upstream reasoning state; it is not triggered unconditionally by every 516 entry.
+**Seeing 516 does not mean the plugin failed, nor does it prove model degradation.** The plugin triggers only when requests meet continuation rules alongside usable upstream reasoning state—it does not blindly resend every 516 request.
 
-### How can I tell whether it continued?
+### How do I verify that continuation actually happened?
 
-Check that the plugin is running, then inspect the logs for the same request: did it start an additional round, and did the request finish normally or fail? Also check whether the client received the response.
+Do not rely on the plugin switch status or a single token count alone. Check the logs for that specific request:
 
-The [diagnostics guide](docs/DIAGNOSTICS.md) explains the fields and log-summary tool. An enabled switch or a single token count is not enough to establish the result.
+1. Did the request log any continuation rounds?
+2. Did the final round complete normally or encounter an error?
+3. Did your client successfully receive the combined output? (Host acceptance does not guarantee client delivery.)
 
-### Does WebSocket work too?
+For log fields and inspection tools, see the [diagnostics guide](docs/DIAGNOSTICS.md).
 
-Yes. Continuation on later turns requires complete context and usable upstream reasoning state. Missing, expired or oversized context may prevent continuation for that request. See the [compatibility notes](docs/COMPATIBILITY.md) for the conditions.
+### Does WebSocket continuation work?
 
-### What if requests stall or fail after enabling it?
+Yes. Subsequent rounds require complete, available context and valid upstream encrypted reasoning state, along with the remaining continuation conditions. If context is missing, expired, or exceeds cache limits, that request may not be continued. Not all client and platform combinations have undergone full validation.
 
-Disable CodexReflow and try normal conversation with the same model to see whether the problem persists. A useful report includes CPA / ECPA, plugin and client versions, plus redacted error details.
+### What should I do if requests freeze or return errors?
 
-Do not upload credentials, account information, full configuration files or raw conversations. [Report a problem](https://github.com/LaoPiLao/cpa-plugin-codexreflow/issues/new?template=bug_report.md).
+1. Temporarily disable CodexReflow in your CPA plugin list and send a message with the same model. If normal behavior resumes, include that observation in your report to help narrow down the cause.
+2. When reporting issues, include CPA/ECPA, plugin, and client versions alongside sanitized error logs.
+3. Never post API keys, account credentials, full configs, or private chat histories. [Submit a report](https://github.com/chatwithgod/cpa-plugin-codexreflow/issues/new?template=bug_report.md).
 
-## Data and privacy
+## Privacy and data handling
 
-The plugin temporarily caches context and encrypted reasoning state in process memory to connect successive turns. Default diagnostic logs omit prompts, answers, credentials and encrypted reasoning content.
+To stitch consecutive rounds together, the plugin temporarily caches conversation context and encrypted reasoning state in local process memory.
 
-CPA and other plugins control their own logging. See the [compatibility notes](docs/COMPATIBILITY.md) for cache scope, size limits and expiration.
+Default diagnostic logs **never record** prompts, model outputs, credentials, or encrypted reasoning data. Logging behaviors in CPA itself or other third-party plugins follow their own separate configurations.
 
 ## Further reading
 
-The configuration, diagnostics and development guides are currently in Chinese:
+*Note: The configuration, diagnostics and development guides are currently written in Chinese.*
 
-- [Configuration](docs/CONFIGURATION.md): automatic and manual modes, exclusions, continuation limits and legacy settings.
-- [Diagnostics](docs/DIAGNOSTICS.md): continuation rounds, stop reasons and usage.
-- [Compatibility and validation](docs/COMPATIBILITY.md): tested coverage and known limitations.
-- [Development](CONTRIBUTING.md) · [Multiplatform builds](docs/MULTIPLATFORM.md) · [Release process](docs/RELEASING.md) · [Changelog](CHANGELOG.md).
+- [Configuration](docs/CONFIGURATION.md): Automatic vs. manual modes, exclusions, round limits, and legacy config migration.
+- [Diagnostics](docs/DIAGNOSTICS.md): Tracking continuation rounds, stop reasons, and token usage.
+- [Compatibility and limits](docs/COMPATIBILITY.md): Platform test coverage, WebSocket context requirements, and cache limits.
+- [Development](CONTRIBUTING.md) · [Multiplatform builds](docs/MULTIPLATFORM.md) · [Releasing](docs/RELEASING.md) · [Changelog](CHANGELOG.md)
 
-## Attribution, acknowledgments and license
+## Attribution, acknowledgments, and license
 
-CodexReflow builds on the work of these projects:
+CodexReflow builds upon the contributions of these upstream projects:
 
-- **Direct upstream: [uf-hy / CPA CodexComp v0.1.7](https://github.com/uf-hy/cpa-plugin-codexcomp/tree/v0.1.7).** This project forks that CPA plugin, inheriting its plugin integration, configuration, routing and Go continuation implementation.
-- **Algorithm source: [dzshzx / codexcomp](https://github.com/dzshzx/codexcomp).** The upstream Go implementation of result folding and continuation was ported from this project's `fold.py`.
-- **Mechanism source: [neteroster / CodexCont](https://github.com/neteroster/CodexCont).** The original `518n−2` truncation-detection rule and encrypted-reasoning replay approach.
+- **Direct upstream: [uf-hy / CPA CodexComp v0.1.7](https://github.com/uf-hy/cpa-plugin-codexcomp/tree/v0.1.7)**: Directly forked and independently maintained, inheriting its C ABI bridge, configuration, routing, and Go continuation logic.
+- **Algorithm source: [dzshzx / codexcomp](https://github.com/dzshzx/codexcomp)**: Upstream Go response folding and merging algorithms were ported from this project's `fold.py`.
+- **Mechanism source: [neteroster / CodexCont](https://github.com/neteroster/CodexCont)**: Origin of the `518n-2` truncation detection heuristic and encrypted reasoning replay pattern.
 
-Thanks to these projects and their authors. CodexReflow adds HTTP/SSE/WebSocket compatibility improvements, automatic model matching and runtime diagnostics, and is maintained independently. It is not an official OpenAI or CLIProxyAPI plugin.
+Thanks to these projects and authors for their foundational work. CodexReflow adds improved HTTP/SSE and WebSocket handling, automatic model matching, and enhanced diagnostics. It is maintained independently and is not an official OpenAI or CLIProxyAPI project.
 
-Licensed under [MIT](LICENSE), with the original authors' copyrights and license notices retained. See [THIRD_PARTY_NOTICES.md](THIRD_PARTY_NOTICES.md) and [THIRD_PARTY_LICENSES.txt](THIRD_PARTY_LICENSES.txt) for complete attribution and third-party licenses.
+Released under the [MIT License](LICENSE), retaining original copyright and permission notices. Full third-party notices and licenses are documented in [THIRD_PARTY_NOTICES.md](THIRD_PARTY_NOTICES.md) and [THIRD_PARTY_LICENSES.txt](THIRD_PARTY_LICENSES.txt).
